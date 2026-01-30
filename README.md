@@ -1,15 +1,133 @@
-# Draftworx Context
+# Draftworx Context & Automation Library
 
-Excel add-in for AI-powered assistance. Extracts selected cell data as structured JSON — perfect for pasting into AI chat windows.
+Excel add-in for AI-powered assistance and composable automations.
 
 ## Features
 
+### Context Extraction
 - 🔴 **Live Updates** — Automatically captures selection changes
 - 📋 **One-Click Copy** — JSON to clipboard instantly
 - 📊 **Rich Data** — Cell references, values, and formulas
-- ⚡ **Lightweight** — Fast, minimal UI that stays out of your way
 
-## JSON Output Format
+### Automation Library
+- ⚡ **Composable** — Small, reusable functions that chain together
+- 🔧 **Primitives** — Low-level building blocks for custom workflows
+- 🚀 **Automations** — Pre-built, ready-to-use composed operations
+
+## Architecture
+
+```
+src/
+├── taskpane/           # Add-in UI
+│   ├── taskpane.html
+│   └── taskpane.ts
+└── lib/                # Automation library
+    ├── index.ts        # Public exports
+    ├── types.ts        # Type definitions
+    ├── range.ts        # Range capture/paste primitives
+    ├── sheet.ts        # Sheet management primitives
+    └── automations.ts  # Composed automations
+```
+
+### Design Principles
+
+1. **Primitives vs Automations**
+   - Primitives (`range.ts`, `sheet.ts`) require `Excel.run()` context
+   - Automations (`automations.ts`) handle their own context — call directly
+
+2. **Composability**
+   - Each function does one thing well
+   - Chain primitives for custom workflows
+   - Use automations for common patterns
+
+3. **Type Safety**
+   - Full TypeScript with strict types
+   - Results wrapped in `AutomationResult<T>` for error handling
+
+## Using the Library
+
+### Quick Start — Pre-built Automations
+
+```typescript
+import { copySelectionToNewSheet } from './lib';
+
+// Copy selection to a new sheet (values + formulas)
+const result = await copySelectionToNewSheet();
+if (result.success) {
+  console.log(`Created: ${result.data.newSheetName}`);
+}
+
+// Values only (strip formulas)
+await copySelectionToNewSheet({ valuesOnly: true });
+```
+
+### Building Custom Automations
+
+```typescript
+import { captureSelection, pasteRange, createSheet } from './lib';
+
+// Create a custom automation that copies selection to multiple sheets
+await Excel.run(async (context) => {
+  const captured = await captureSelection(context);
+  
+  // Create 3 backup sheets
+  for (let i = 1; i <= 3; i++) {
+    const sheet = await createSheet(context, { name: `Backup ${i}` });
+    await pasteRange(context, captured, sheet);
+  }
+});
+```
+
+## Available Functions
+
+### Primitives (use inside Excel.run)
+
+| Function | Description |
+|----------|-------------|
+| `captureSelection(context)` | Capture current selection as CapturedRange |
+| `captureRange(context, address, sheet?)` | Capture specific range |
+| `pasteRange(context, captured, sheet, address?, valuesOnly?)` | Paste captured data |
+| `createSheet(context, options?)` | Create a new worksheet |
+| `generateUniqueSheetName(context, baseName)` | Get available sheet name |
+| `getActiveSheet(context)` | Get the active worksheet |
+| `activateSheet(sheet, context)` | Switch to a worksheet |
+
+### Automations (call directly)
+
+| Function | Description |
+|----------|-------------|
+| `copySelectionToNewSheet(options?)` | Copy selection to a new sheet |
+| `duplicateSelection(targetAddress, valuesOnly?)` | Duplicate within same sheet |
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+ (LTS recommended)
+- Excel (Windows, Mac, or Web)
+
+### Setup
+
+```bash
+git clone https://github.com/spencergrantkyle/draftworx-context.git
+cd draftworx-context
+npm install
+npm run dev
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Sideloading
+
+1. Run `npm run dev`
+2. In Excel: **Insert** → **Add-ins** → **My Add-ins** → **Upload My Add-in**
+3. Select `manifest.xml`
+
+## JSON Output Format (Context Feature)
 
 ```json
 {
@@ -24,68 +142,11 @@ Excel add-in for AI-powered assistance. Extracts selected cell data as structure
 }
 ```
 
-## Development
-
-### Prerequisites
-
-- Node.js 18+ (LTS recommended)
-- Excel (Windows, Mac, or Web)
-
-### Setup
-
-```bash
-# Clone the repo
-git clone https://github.com/spencergrantkyle/draftworx-context.git
-cd draftworx-context
-
-# Install dependencies
-npm install
-
-# Start dev server (https://localhost:3000)
-npm run dev
-```
-
-### Windows Setup
-
-1. **Trust the dev certificate** (first time only):
-   - When you run `npm run dev`, webpack creates a self-signed HTTPS cert
-   - If Excel blocks loading, manually trust the cert or use Edge to visit https://localhost:3000 and accept the warning
-
-2. **Sideload in Excel**:
-   - Open Excel
-   - Go to: **Insert** → **Add-ins** → **My Add-ins** → **Upload My Add-in**
-   - Browse to `manifest.xml` in the project folder
-   - Click **Upload**
-
-3. **Use the add-in**:
-   - Click the **Draftworx** button in the Home tab
-   - Select cells → JSON appears in the taskpane
-   - Click **Copy JSON** to clipboard
-
-### Build
-
-```bash
-npm run build
-```
-
-### Troubleshooting (Windows)
-
-- **"Add-in failed to load"**: Check that `npm run dev` is running and https://localhost:3000 is accessible
-- **Certificate errors**: Visit https://localhost:3000 in Edge/Chrome, accept the security warning
-- **Taskpane blank**: Check browser console (F12 in taskpane) for errors
-
-## Installation (Production)
-
-1. Get the manifest URL from your deployment
-2. In Excel: Insert → Add-ins → Upload My Add-in
-3. Select the manifest.xml file
-
 ## Tech Stack
 
-- TypeScript
+- TypeScript (strict mode)
 - Office.js (Excel JavaScript API)
 - Webpack
-- No frameworks — just vanilla TS for speed
 
 ## License
 

@@ -1,7 +1,10 @@
 /*
  * Draftworx Context - Excel Add-in
  * Extracts selected cell data as structured JSON for AI assistance
+ * + Automation library for composable Excel tasks
  */
+
+import { copySelectionToNewSheet } from '../lib';
 
 interface CellData {
   ref: string;
@@ -30,6 +33,10 @@ const statusEl = document.getElementById('status') as HTMLDivElement;
 const includeFormulasCheckbox = document.getElementById('includeFormulas') as HTMLInputElement;
 const liveUpdateCheckbox = document.getElementById('liveUpdate') as HTMLInputElement;
 
+// Automation DOM Elements
+const copyToNewSheetBtn = document.getElementById('copyToNewSheetBtn') as HTMLButtonElement;
+const automationValuesOnlyCheckbox = document.getElementById('automationValuesOnly') as HTMLInputElement;
+
 // Initialize Office
 Office.onReady(async (info) => {
   if (info.host === Office.HostType.Excel) {
@@ -40,6 +47,9 @@ Office.onReady(async (info) => {
     refreshBtn.addEventListener('click', () => extractSelectionData());
     liveUpdateCheckbox.addEventListener('change', toggleLiveUpdate);
     includeFormulasCheckbox.addEventListener('change', () => extractSelectionData());
+    
+    // Automation event listeners
+    copyToNewSheetBtn.addEventListener('click', handleCopyToNewSheet);
     
     // Initial extraction
     await extractSelectionData();
@@ -262,4 +272,40 @@ function getColumnLetter(num: number): string {
     num = Math.floor((num - 1) / 26);
   }
   return letter;
+}
+
+// ============================================================================
+// AUTOMATIONS
+// ============================================================================
+
+/**
+ * Handle the "Copy Selection to New Sheet" automation
+ */
+async function handleCopyToNewSheet(): Promise<void> {
+  const valuesOnly = automationValuesOnlyCheckbox.checked;
+  
+  // Disable button during operation
+  copyToNewSheetBtn.disabled = true;
+  copyToNewSheetBtn.textContent = '⏳ Working...';
+  
+  try {
+    const result = await copySelectionToNewSheet({
+      valuesOnly,
+      activateNewSheet: true
+    });
+    
+    if (result.success && result.data) {
+      showStatus(
+        `Created "${result.data.newSheetName}" with ${result.data.captured.rowCount * result.data.captured.columnCount} cells`,
+        'success'
+      );
+    } else {
+      showStatus(result.error || 'Unknown error', 'error');
+    }
+  } catch (error) {
+    showStatus(error instanceof Error ? error.message : 'Automation failed', 'error');
+  } finally {
+    copyToNewSheetBtn.disabled = false;
+    copyToNewSheetBtn.textContent = '📄 Copy Selection to New Sheet';
+  }
 }
