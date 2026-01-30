@@ -12,9 +12,7 @@
     "validate": "office-addin-manifest validate manifest.xml",
     "lint": "eslint src/**/*.ts"
   },
-  "dependencies": {
-    "@microsoft/office-js": "^1.1.89"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/office-js": "^1.0.377",
     "copy-webpack-plugin": "^12.0.2",

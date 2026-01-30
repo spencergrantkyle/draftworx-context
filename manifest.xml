@@ -10,8 +10,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Draftworx Context"/>
   <Description DefaultValue="Extract cell data as structured JSON for AI-powered assistance"/>
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
+  <IconUrl DefaultValue="https://placehold.co/32x32/0b4a6f/white?text=D"/>
+  <HighResolutionIconUrl DefaultValue="https://placehold.co/64x64/0b4a6f/white?text=D"/>
   <SupportUrl DefaultValue="https://github.com/spencergrantkyle/draftworx-context"/>
   
   <Hosts>
@@ -68,9 +68,9 @@
     
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://placehold.co/16x16/0b4a6f/white?text=D"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://placehold.co/32x32/0b4a6f/white?text=D"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://placehold.co/80x80/0b4a6f/white?text=D"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/spencergrantkyle/draftworx-context"/>

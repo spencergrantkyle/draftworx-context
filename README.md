@@ -34,21 +34,45 @@ Excel add-in for AI-powered assistance. Extracts selected cell data as structure
 ### Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/spencergrantkyle/draftworx-context.git
+cd draftworx-context
+
 # Install dependencies
 npm install
 
 # Start dev server (https://localhost:3000)
 npm run dev
-
-# Sideload into Excel
-npm run sideload
 ```
+
+### Windows Setup
+
+1. **Trust the dev certificate** (first time only):
+   - When you run `npm run dev`, webpack creates a self-signed HTTPS cert
+   - If Excel blocks loading, manually trust the cert or use Edge to visit https://localhost:3000 and accept the warning
+
+2. **Sideload in Excel**:
+   - Open Excel
+   - Go to: **Insert** → **Add-ins** → **My Add-ins** → **Upload My Add-in**
+   - Browse to `manifest.xml` in the project folder
+   - Click **Upload**
+
+3. **Use the add-in**:
+   - Click the **Draftworx** button in the Home tab
+   - Select cells → JSON appears in the taskpane
+   - Click **Copy JSON** to clipboard
 
 ### Build
 
 ```bash
 npm run build
 ```
+
+### Troubleshooting (Windows)
+
+- **"Add-in failed to load"**: Check that `npm run dev` is running and https://localhost:3000 is accessible
+- **Certificate errors**: Visit https://localhost:3000 in Edge/Chrome, accept the security warning
+- **Taskpane blank**: Check browser console (F12 in taskpane) for errors
 
 ## Installation (Production)
 
