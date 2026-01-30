@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draftworx Context</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0b4a6f;
+    }
+    
+    .selection-info {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .selection-info label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .selection-info .address {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0b4a6f;
+    }
+    
+    .cell-count {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+    
+    .context-output {
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      max-height: 300px;
+      overflow: auto;
+    }
+    
+    .context-output pre {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 11px;
+      color: #d4d4d4;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .context-output .key { color: #9cdcfe; }
+    .context-output .string { color: #ce9178; }
+    .context-output .number { color: #b5cea8; }
+    .context-output .null { color: #569cd6; }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: #0b4a6f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 100px;
+    }
+    
+    button:hover {
+      background: #0d5a87;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    button.secondary {
+      background: white;
+      color: #0b4a6f;
+      border: 1px solid #0b4a6f;
+    }
+    
+    button.secondary:hover {
+      background: #f0f7ff;
+    }
+    
+    .status {
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: none;
+    }
+    
+    .status.success {
+      display: block;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .status.error {
+      display: block;
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    .live-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #4caf50;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .settings {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .settings label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    
+    .settings input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="live-indicator"></span>
+    <h1>Draftworx Context</h1>
+  </div>
+  
+  <div class="selection-info">
+    <label>Current Selection</label>
+    <div class="address" id="selectionAddress">Select cells to begin</div>
+    <div class="cell-count" id="cellCount"></div>
+  </div>
+  
+  <div class="context-output">
+    <pre id="contextJson">{ "cells": [] }</pre>
+  </div>
+  
+  <div class="actions">
+    <button id="copyBtn">📋 Copy JSON</button>
+    <button id="refreshBtn" class="secondary">🔄 Refresh</button>
+  </div>
+  
+  <div class="status" id="status"></div>
+  
+  <div class="settings">
+    <label>
+      <input type="checkbox" id="includeFormulas" checked>
+      Include formulas
+    </label>
+    <label>
+      <input type="checkbox" id="liveUpdate" checked>
+      Live update on selection change
+    </label>
+  </div>
+  
+  <script src="taskpane.js"></script>
+</body>
+</html>
